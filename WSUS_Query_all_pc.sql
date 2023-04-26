@@ -2,7 +2,9 @@ select
 FullDomainName ,
 CASE WHEN OSBuildNumber = 17763 THEN 'Windows Server 2019 Datacenter'
 WHEN OSBuildNumber = 17763 THEN 'Windows Server 2019 Standard'
+WHEN OSBuildNumber = 20348 THEN 'Windows Server 2019 Datacenter'
 WHEN OSBuildNumber = 22621 THEN 'Windows 10 Pro'
+WHEN OSBuildNumber = 22348 THEN 'Windows Server 2022'
 WHEN OSBuildNumber = 22000 THEN 'Windows 10 Pro'
 WHEN OSBuildNumber = 19045 THEN 'Windows 10 Pro'
 WHEN OSBuildNumber = 19044 THEN 'Windows 10 Pro'
@@ -17,11 +19,12 @@ WHEN OSBuildNumber = 19042 THEN 'Windows 10 Pro'
 WHEN OSBuildNumber = 9600 THEN 'Windows 8.1'
 WHEN OSBuildNumber = 9200 THEN 'Windows 8'
 WHEN OSBuildNumber = 7601 THEN 'Windows 7'
+WHEN OSBuildNumber = 6003 THEN 'Windows Server 2008, Service Pack 2'
 ELSE Computer.OSDescription
 END as 'OS',
 OSBuildNumber as 'OS Build',
 IPAddress,
-CASE WHEN Donwstream.AccountName IS NULL THEN 'ML-00-WSUS-1'
+CASE WHEN Donwstream.AccountName IS NULL THEN 'INFO-WSUS01-1'
 ELSE Donwstream.AccountName
 END AS 'WSUS',
 CASE WHEN Failer.Failed > 0 THEN 'Failed' ELSE 'OK' END as Status,
@@ -34,6 +37,5 @@ LEFT JOIN tbDownstreamServerTarget as Donwstream ON tbComputerTarget.ParentServe
 LEFT JOIN tbComputerSummaryForMicrosoftUpdates as Failer ON Computer.TargetID = Failer.TargetID
 LEFT JOIN tbTargetInTargetGroup as TG_ID ON Computer.TargetID = TG_ID.TargetID
 LEFT JOIN tbTargetGroup as TG_Name ON TG_ID.TargetGroupID = TG_Name.TargetGroupID
--- where FullDomainName Like 'hq-%19%'
-
-order by 'Last Reported', 'WSUS', 'Group Name' 
+-- where FullDomainName Like 'BR%'
+order by Status, [Group Name]
